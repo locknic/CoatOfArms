@@ -1,5 +1,7 @@
 package com.custardgames.coatofarms.server;
 
+import com.custardgames.coatofarms.server.net.ServerSocket;
+
 public class ServerMain
 {
 
@@ -7,15 +9,17 @@ public class ServerMain
 
 	private boolean running;
 	
-	private int totalTicks;
+	private ServerSocket socket;
 
-	public ServerMain()
+	public ServerMain(int port)
 	{
-		init();
+		init(port);
 	}
 
-	public void init()
+	public void init(int port)
 	{
+		socket = new ServerSocket(port);
+		socket.start();
 		running = false;
 	}
 
@@ -37,6 +41,7 @@ public class ServerMain
 	public void stop()
 	{
 		running = false;
+		socket.shutDown();
 	}
 
 	private void loop()
@@ -52,21 +57,23 @@ public class ServerMain
 
 			currentFrameTime = System.currentTimeMillis();
 
-			try
+			if (1000 / tickrate - (currentFrameTime - lastFrameTime) > 0)
 			{
-				Thread.sleep(1000 / tickrate - (currentFrameTime - lastFrameTime));
-			}
-			catch (InterruptedException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try
+				{
+					Thread.sleep(1000 / tickrate - (currentFrameTime - lastFrameTime));
+				}
+				catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
 	private void tick()
 	{
-		System.out.println(totalTicks + " Server Ticking");
-		totalTicks++;
+		
 	}
 }

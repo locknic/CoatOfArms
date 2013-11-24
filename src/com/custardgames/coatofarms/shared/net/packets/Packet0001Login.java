@@ -1,7 +1,5 @@
 package com.custardgames.coatofarms.shared.net.packets;
 
-import com.custardgames.coatofarms.client.net.ClientSocket;
-import com.custardgames.coatofarms.server.net.ServerSocket;
 
 public class Packet0001Login extends Packet
 {
@@ -14,22 +12,10 @@ public class Packet0001Login extends Packet
 		this.username = dataArray[0];
 	}
 
-	public Packet0001Login(String username, int x, int y)
+	public Packet0001Login(String username)
 	{
 		super(0001);
 		this.username = username;
-	}
-
-	@Override
-	public void writeData(ClientSocket client)
-	{
-		client.sendData(getData());
-	}
-
-	@Override
-	public void writeData(ServerSocket server)
-	{
-		server.sendDataToAllClients(getData());
 	}
 
 	@Override

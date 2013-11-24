@@ -18,14 +18,16 @@ public class ClientSocket extends Thread
 	private InetAddress ipAddress;
 	private DatagramSocket socket;
 	private int port;
+	private String username;
 
-	public ClientSocket(String ipAddress, int port)
+	public ClientSocket(String ipAddress, int port, String username)
 	{
 		try
 		{
 			this.socket = new DatagramSocket();
 			this.ipAddress = InetAddress.getByName(ipAddress);
 			this.port = port;
+			this.username = username;
 		}
 		catch (SocketException e)
 		{
@@ -37,6 +39,11 @@ public class ClientSocket extends Thread
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public String getUsername()
+	{
+		return username;
 	}
 
 	public void run()
@@ -97,10 +104,17 @@ public class ClientSocket extends Thread
 			break;
 		}
 	}
+	
+	public void login()
+	{
+		Packet0001Login loginPacket = new Packet0001Login(username);
+		sendData(loginPacket.getData());
+	}
 
 	public void disconnect()
 	{
-
+		Packet0002Disconnect dcPacket = new Packet0002Disconnect(username);
+		sendData(dcPacket.getData());
 	}
 
 	private void handleLogin(Packet0001Login packet, InetAddress address, int port)

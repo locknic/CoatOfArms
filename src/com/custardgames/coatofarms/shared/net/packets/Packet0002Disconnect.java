@@ -1,7 +1,5 @@
 package com.custardgames.coatofarms.shared.net.packets;
 
-import com.custardgames.coatofarms.client.net.ClientSocket;
-import com.custardgames.coatofarms.server.net.ServerSocket;
 
 public class Packet0002Disconnect extends Packet
 {
@@ -17,18 +15,6 @@ public class Packet0002Disconnect extends Packet
 	{
 		super(0002);
 		this.username = username;
-	}
-
-	@Override
-	public void writeData(ClientSocket client)
-	{
-		client.sendData(getData());
-	}
-
-	@Override
-	public void writeData(ServerSocket server)
-	{
-		server.sendDataToAllClients(getData());
 	}
 
 	@Override

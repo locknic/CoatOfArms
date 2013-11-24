@@ -5,6 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.custardgames.coatofarms.shared.net.packets.Packet;
 import com.custardgames.coatofarms.shared.net.packets.Packet.PacketTypes;
@@ -16,6 +18,7 @@ public class ServerSocket extends Thread
 {
 	private DatagramSocket socket;
 	private int port;
+	private List<ServerUser> connectedUsers;
 
 	public ServerSocket(int port)
 	{
@@ -23,6 +26,7 @@ public class ServerSocket extends Thread
 		{
 			this.port = port;
 			this.socket = new DatagramSocket(this.port);
+			connectedUsers = new ArrayList<ServerUser>();
 		}
 		catch (SocketException e)
 		{
@@ -101,16 +105,43 @@ public class ServerSocket extends Thread
 
 	public void handleLogin(Packet0001Login packet, InetAddress address, int port)
 	{
-
+		boolean alreadyConnected = false;
+		for(ServerUser user : connectedUsers)
+		{
+			if (user.getUsername() == packet.getUsername())
+			{
+				alreadyConnected = true;
+			}
+		}
+		if (!alreadyConnected)
+		{
+			ServerUser newUser = new ServerUser(packet.getUsername(), address.getHostAddress(), port);
+			connectedUsers.add(newUser);
+			System.out.println(packet.getUsername() + " has joined the game, total players: " + connectedUsers.size());
+		}
 	}
 
 	public void handleDC(Packet0002Disconnect packet)
 	{
-
+		int indexLocation = 0;;
+		for (ServerUser user : connectedUsers)
+		{
+			if (user.getUsername().equals(packet.getUsername()))
+			{
+				break;
+			}
+			indexLocation++;
+		}
+		
+		if (indexLocation < connectedUsers.size())
+		{
+			connectedUsers.remove(indexLocation);
+			System.out.println(packet.getUsername() + " has left the game, remaining players: " + connectedUsers.size());
+		}
 	}
 
 	private void handleMove(Packet1001Move packet)
 	{
-
+//		System.out.println("Up: " + packet.getUp() + ", Down: " + packet.getDown() + ", Left: " + packet.getLeft() + ", Right: " + packet.getRight());
 	}
 }

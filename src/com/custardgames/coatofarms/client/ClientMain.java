@@ -1,34 +1,57 @@
 package com.custardgames.coatofarms.client;
 
+import java.awt.Canvas;
+
+import com.custardgames.coatofarms.InputHandler;
+import com.custardgames.coatofarms.client.net.ClientSocket;
+
 public class ClientMain
 {
 	final private int tickrate = 30;
 	final private int framerate = 30;
-	
+
 	private boolean running;
 	private boolean rendering;
 	
-	private int totalTicks;
-	private int totalRenders;
+	private ClientSocket socket;
 	
-	public ClientMain()
+	private Canvas gameScreen;
+	private InputHandler input;
+	private ClientEntities entities;
+	
+	public ClientMain(Canvas gameScreen, InputHandler input)
 	{
+		this.gameScreen = gameScreen;
+		this.input = input;
 		init();
 	}
 
 	public void init()
 	{
+		entities = new ClientEntities();
 		running = false;
 		rendering = false;
-		totalTicks = 0;
-		totalRenders = 0;
+	}
+	
+	public void joinGame(String ipAddress, int port, String username)
+	{
+		socket = new ClientSocket(ipAddress, port, username);
+		socket.start();
+		socket.login();
+		start();
+	}
+	
+	public void leaveGame()
+	{
+		socket.disconnect();
+		stop();
 	}
 
 	public synchronized void start()
 	{
 		running = true;
 		rendering = true;
-		
+
 		Thread runner = new Thread(new Runnable()
 		{
 			@Override
@@ -38,7 +61,7 @@ public class ClientMain
 			}
 		});
 		runner.start();
-		
+
 		Thread renderer = new Thread(new Runnable()
 		{
 			@Override
@@ -55,7 +78,7 @@ public class ClientMain
 		running = false;
 		rendering = false;
 	}
-	
+
 	private void loopTick()
 	{
 		long currentFrameTime = System.currentTimeMillis();
@@ -69,18 +92,21 @@ public class ClientMain
 
 			currentFrameTime = System.currentTimeMillis();
 
-			try
+			if (1000 / tickrate - (currentFrameTime - lastFrameTime) > 0)
 			{
-				Thread.sleep(1000 / tickrate - (currentFrameTime - lastFrameTime));
-			}
-			catch (InterruptedException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try
+				{
+					Thread.sleep(1000 / tickrate - (currentFrameTime - lastFrameTime));
+				}
+				catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
-	
+
 	private void loopRender()
 	{
 		long currentFrameTime = System.currentTimeMillis();
@@ -94,27 +120,30 @@ public class ClientMain
 
 			currentFrameTime = System.currentTimeMillis();
 
-			try
+			if (1000 / framerate - (currentFrameTime - lastFrameTime) > 0)
 			{
-				Thread.sleep(1000 / framerate - (currentFrameTime - lastFrameTime));
-			}
-			catch (InterruptedException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try
+				{
+					Thread.sleep(1000 / framerate - (currentFrameTime - lastFrameTime));
+				}
+				catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
-	
+
 	private void tick()
 	{
-		System.out.println(totalTicks + " Client Ticking");
-		totalTicks++;
+		ClientLogic logic = new ClientLogic();
+		logic.network(socket, input);
 	}
-	
+
 	private void render()
 	{
-		System.out.println(totalRenders + " Client Rendering");
-		totalRenders++;
+		ClientGraphic graphic = new ClientGraphic();
+		graphic.render(gameScreen, entities);
 	}
 }

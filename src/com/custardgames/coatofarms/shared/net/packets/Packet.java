@@ -1,7 +1,5 @@
 package com.custardgames.coatofarms.shared.net.packets;
 
-import com.custardgames.coatofarms.client.net.ClientSocket;
-import com.custardgames.coatofarms.server.net.ServerSocket;
 
 public abstract class Packet
 {
@@ -28,15 +26,27 @@ public abstract class Packet
 	{
 		this.packetID = (byte) packetID;
 	}
-
-	public abstract void writeData(ClientSocket client);
-
-	public abstract void writeData(ServerSocket server);
+	
+	public boolean readBoolean(String data)
+	{
+		if (data.equals("true"))
+		{
+			return true;
+		}
+		else if (data.equals("false"))
+		{
+			return false;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 	public String readData(byte[] data)
 	{
 		String message = new String(data).trim();
-		return message.substring(2);
+		return message.substring(4);
 	}
 
 	public abstract byte[] getData();
