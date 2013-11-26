@@ -108,7 +108,7 @@ public class ServerSocket extends Thread
 		boolean alreadyConnected = false;
 		for(ServerUser user : connectedUsers)
 		{
-			if (user.getUsername() == packet.getUsername())
+			if (user.getUsername().equals(packet.getUsername()))
 			{
 				alreadyConnected = true;
 			}
@@ -117,7 +117,7 @@ public class ServerSocket extends Thread
 		{
 			ServerUser newUser = new ServerUser(packet.getUsername(), address.getHostAddress(), port);
 			connectedUsers.add(newUser);
-			System.out.println(packet.getUsername() + " has joined the game, total players: " + connectedUsers.size());
+			System.out.println(packet.getUsername() + " has connected to the server, total players: " + connectedUsers.size());
 		}
 	}
 
@@ -136,12 +136,12 @@ public class ServerSocket extends Thread
 		if (indexLocation < connectedUsers.size())
 		{
 			connectedUsers.remove(indexLocation);
-			System.out.println(packet.getUsername() + " has left the game, remaining players: " + connectedUsers.size());
+			System.out.println(packet.getUsername() + " has disconnected from the server, remaining players: " + connectedUsers.size());
 		}
 	}
 
 	private void handleMove(Packet1001Move packet)
 	{
-//		System.out.println("Up: " + packet.getUp() + ", Down: " + packet.getDown() + ", Left: " + packet.getLeft() + ", Right: " + packet.getRight());
+
 	}
 }
