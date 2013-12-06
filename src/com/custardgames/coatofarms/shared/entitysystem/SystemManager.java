@@ -1,51 +1,20 @@
 package com.custardgames.coatofarms.shared.entitysystem;
 
+import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.List;
 
-public class SystemManager
+@SuppressWarnings("serial")
+public class SystemManager extends ArrayList<SystemECS>
 {
-	private List<System> systems;
 	
 	public SystemManager()
 	{
-		systems = new ArrayList<System>();
-	}
-	
-	public void addSystem(System system)
-	{
-		systems.add(system);
-	}
-	
-	public void removeSystem(String id)
-	{
-		int indexLocation = 0;
-		for (System system : systems)
-		{
-			if (system.getId().equals(id))
-			{
-				systems.remove(indexLocation);
-			}
-			indexLocation++;
-		}
-	}
-	
-	public System getSystem(String id)
-	{
-		for (System system : systems)
-		{
-			if (system.getId().equals(id))
-			{
-				return system;
-			}
-		}
-		
-		return null;
+		super();
 	}
 	
 	public boolean containsSystem(String id)
 	{
-		for (System system : systems)
+		for (SystemECS system : this)
 		{
 			if (system.getId().equals(id))
 			{
@@ -56,11 +25,102 @@ public class SystemManager
 		return false;
 	}
 	
+	public boolean containsSystemType(Class<?> systemType)
+	{
+		for (SystemECS system : this)
+		{
+			if (system.getClass() == systemType)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public void startSystem(String id)
+	{
+		getSystem(id).running = true;
+	}
+	
+	public void startSystemType(Class<?> systemType)
+	{
+		getSystemType(systemType).running = true;
+	}
+	
+	public void stopSystem(Class<?> systemType)
+	{
+		getSystemType(systemType).running = false;
+	}
+	
+	public void removeSystem(String id)
+	{
+		int indexLocation = 0;
+		for (SystemECS system : this)
+		{
+			if (system.getId().equals(id))
+			{
+				this.remove(indexLocation);
+			}
+			indexLocation++;
+		}
+	}
+	
+	public void removeSystemType(Class<?> systemType)
+	{
+		int indexLocation = 0;
+		for (SystemECS system : this)
+		{
+			if (system.getClass() == systemType)
+			{
+				this.remove(indexLocation);
+			}
+			indexLocation++;
+		}
+	}
+	
+	public SystemECS getSystem(String id)
+	{
+		for (SystemECS system : this)
+		{
+			if (system.getId().equals(id))
+			{
+				return system;
+			}
+		}
+		
+		return null;
+	}
+	
+	public SystemECS getSystemType(Class<?> systemType)
+	{
+		for (SystemECS system : this)
+		{
+			if (system.getClass() == systemType)
+			{
+				return system;
+			}
+		}
+		
+		return null;
+	}
+	
 	public void tick(long delta)
 	{
-		for (System system : systems)
+		for (SystemECS system : this)
 		{
 			system.tick(delta);
+		}
+	}
+	
+	public void render(long delta, Graphics g)
+	{
+		for (SystemECS system : this)
+		{
+			if (system instanceof RenderSystem)
+			{
+				((RenderSystem)system).render(delta, g);
+			}
 		}
 	}
 }

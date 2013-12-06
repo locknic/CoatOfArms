@@ -2,13 +2,17 @@ package com.custardgames.coatofarms;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InputHandler implements KeyListener
 {
-	public boolean up;
-	public boolean down;
-	public boolean left;
-	public boolean right;
+	private List<String> input;
+
+	public InputHandler()
+	{
+		input = new ArrayList<String>();
+	}
 
 	@Override
 	public void keyTyped(KeyEvent e)
@@ -18,34 +22,42 @@ public class InputHandler implements KeyListener
 
 	@Override
 	public void keyPressed(KeyEvent e)
-	{
-		toggle(e, true);
+	{		
+		boolean containsKey = false;
+		for (int inputIndex = 0; inputIndex < input.size(); inputIndex++)
+		{
+			if (input.get(inputIndex).equals(KeyEvent.getKeyText(e.getKeyCode())))
+			{
+				containsKey = true;
+			}
+		}
+		
+		if (!containsKey)
+		{
+			input.add(KeyEvent.getKeyText(e.getKeyCode()));
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
-		toggle(e, false);
+		for (int inputIndex = 0; inputIndex < input.size(); inputIndex++)
+		{
+			if (input.get(inputIndex).equals(KeyEvent.getKeyText(e.getKeyCode())))
+			{
+				input.remove(inputIndex);
+				break;
+			}
+		}
 	}
-
-	private void toggle(KeyEvent e, boolean state)
+	
+	public List<String> getInput()
 	{
-		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W)
-		{
-			up = state;
-		}
-		else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S)
-		{
-			down = state;
-		}
-		else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A)
-		{
-			left = state;
-		}
-		else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D)
-		{
-			right = state;
-		}
+		return input;
 	}
-
+ 
+	public void releaseAll()
+	{
+		input = new ArrayList<String>();
+	}
 }

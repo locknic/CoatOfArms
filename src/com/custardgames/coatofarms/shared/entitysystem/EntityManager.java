@@ -1,51 +1,19 @@
 package com.custardgames.coatofarms.shared.entitysystem;
 
+import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.List;
 
-public class EntityManager
+@SuppressWarnings("serial")
+public class EntityManager extends ArrayList<EntityECS>
 {
-	private List<Entity> entities;
-
 	public EntityManager()
 	{
-		entities = new ArrayList<Entity>();
-	}
-
-	public void addEntity(Entity entity)
-	{
-		entities.add(entity);
-	}
-
-	public void removeEntity(String id)
-	{
-		int indexLocation = 0;
-		for (Entity entity : entities)
-		{
-			if (entity.getId().equals(id))
-			{
-				entities.remove(indexLocation);
-			}
-			indexLocation++;
-		}
-	}
-
-	public List<Entity> getEntity(String id)
-	{
-		List<Entity> gettingEntities = new ArrayList<Entity>();
-		for (Entity entity : entities)
-		{
-			if (entity.getId().equals(id))
-			{
-				gettingEntities.add(entity);
-			}
-		}
-		return gettingEntities;
+		super();
 	}
 
 	public boolean containsEntity(String id)
 	{
-		for (Entity entity : entities)
+		for (EntityECS entity : this)
 		{
 			if (entity.getId().equals(id))
 			{
@@ -55,12 +23,45 @@ public class EntityManager
 
 		return false;
 	}
+	
+	public void removeEntity(String id)
+	{
+		int indexLocation = 0;
+		for (EntityECS entity : this)
+		{
+			if (entity.getId().equals(id))
+			{
+				this.remove(indexLocation);
+			}
+			indexLocation++;
+		}
+	}
+	
+	public EntityECS getEntity(String id)
+	{
+		for (EntityECS entity : this)
+		{
+			if (entity.getId().equals(id))
+			{
+				return entity;
+			}
+		}
+		return null;
+	}
 
 	public void tick(long delta)
 	{
-		for(Entity entity : entities)
+		for(EntityECS entity : this)
 		{
 			entity.tick(delta);
+		}
+	}
+	
+	public void render(long delta, Graphics g)
+	{
+		for(EntityECS entity : this)
+		{
+			entity.render(delta, g);
 		}
 	}
 }

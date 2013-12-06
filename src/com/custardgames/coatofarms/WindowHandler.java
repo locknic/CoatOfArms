@@ -30,14 +30,12 @@ public class WindowHandler implements WindowListener
 	public void windowClosing(WindowEvent arg0)
 	{
 		game.stop();
-		
 	}
 
 	@Override
 	public void windowDeactivated(WindowEvent arg0)
 	{
-		// TODO Auto-generated method stub
-		
+		game.windowDeactivated();
 	}
 
 	@Override
